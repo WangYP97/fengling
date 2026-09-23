@@ -1,4 +1,5 @@
 import requests
+import time
 from config.setting import BASE_URL,TIMEOUT
 
 class ApiClient:
@@ -12,7 +13,10 @@ class ApiClient:
     def set_token(self, token):
         """设置token，后续所有请求自动带上token"""
         self.token = token
-        header={'Authorization': 'JWT ' + self.token}
+        header={
+            'Authorization': 'JWT ' + self.token,
+            'X-Timestamp': str(int(time.time()))
+        }
         self.session.headers.update(header)
 
     def get(self,path,**kwargs):
@@ -44,11 +48,18 @@ class ApiClient:
         return response
 
     def delete(self,path,**kwargs):
-        """post请求"""
         url = self.base_url + path
         if "timeout" not in kwargs:
             kwargs["timeout"] = TIMEOUT
 
         response = self.session.delete(url, **kwargs)
+        return response
+
+    def put(self,path,**kwargs):
+        url = self.base_url + path
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = TIMEOUT
+
+        response = self.session.put(url, **kwargs)
         return response
 
